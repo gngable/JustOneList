@@ -4,36 +4,45 @@
              xmlns:local="clr-namespace:JustOneList"
              xmlns:controls="clr-namespace:Resources.Controls;assembly=JustOneList"
              x:Class="JustOneList.MainPage">
-
-    <StackLayout BackgroundColor="Black">
-        <ListView ItemsSource="{Binding UncheckedList}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Orientation="Horizontal">
-                            <Frame BorderColor="AntiqueWhite" BackgroundColor="Black">
-                                <controls:Checkbox Checked="{Binding IsChecked}" />
-                            </Frame>
-                            <Entry Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AntiqueWhite" HorizontalOptions="FillAndExpand"/>
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <ListView ItemsSource="{Binding CheckedList}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Orientation="Horizontal">
-                            <Frame BorderColor="AntiqueWhite" BackgroundColor="Black">
-                                <controls:Checkbox Checked="{Binding IsChecked}" />
-                            </Frame>
-                            <Entry Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AntiqueWhite" HorizontalOptions="FillAndExpand"/>
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackLayout>
-
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ScrollView>
+            <StackLayout BackgroundColor="Black">
+                <ListView ItemsSource="{Binding UncheckedList}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Orientation="Horizontal">
+                                    <!--<Frame BorderColor="AntiqueWhite" BackgroundColor="Black">-->
+                                        <Switch IsToggled="{Binding IsChecked}"/>
+                                        <!--<controls:Checkbox Checked="{Binding IsChecked}" />
+                                    </Frame>-->
+                                    <Entry Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AntiqueWhite" HorizontalOptions="FillAndExpand"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ListView ItemsSource="{Binding CheckedList}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Orientation="Horizontal">
+                                    <Switch IsToggled="{Binding IsChecked}"/>
+                                    <!--<Frame BorderColor="AntiqueWhite" BackgroundColor="Black">
+                                        <controls:Checkbox Checked="{Binding IsChecked}" />
+                                    </Frame>-->
+                                    <Entry Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AntiqueWhite" HorizontalOptions="FillAndExpand"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </ScrollView>
+        <Button Grid.Row="1" Text="Clear" Command="{Binding ClearCommand}"></Button>
+    </Grid>
 </ContentPage>

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace JustOneList
 {
@@ -12,6 +13,8 @@ namespace JustOneList
     {
         public ObservableCollection<ListItem> UncheckedList { get; } = new ObservableCollection<ListItem>();
         public ObservableCollection<ListItem> CheckedList { get; } = new ObservableCollection<ListItem>();
+
+        public ICommand ClearCommand { get; }
 
         public MainPageViewModel()
         {
@@ -24,6 +27,24 @@ namespace JustOneList
             CheckedList.CollectionChanged += CheckedList_CollectionChanged;
 
             AddListeners();
+
+            ClearCommand = new DelegateCommand(() =>
+            {
+                foreach (var listItem in UncheckedList)
+                {
+                    listItem.PropertyChanged -= UncheckedListItemOnPropertyChanged;
+                }
+
+                foreach (var listItem in CheckedList)
+                {
+                    listItem.PropertyChanged -= CheckedListItemPropertyChanged;
+                }
+
+                UncheckedList.Clear();
+                CheckedList.Clear();
+                UncheckedList.Add(new ListItem());
+                AddListeners();
+            });
         }
 
         private void CheckedList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
