@@ -23,7 +23,7 @@ namespace Resources.Controls
             };
 
             ContentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(42) });
-            ContentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            //ContentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
 
             ImageContainer = new Image
@@ -51,7 +51,7 @@ namespace Resources.Controls
             };
             ContentContainer.Content = TextContainer;
 
-            ContentGrid.Children.Add(ContentContainer);
+            //ContentGrid.Children.Add(ContentContainer);
 
             base.Content = ContentGrid;
 

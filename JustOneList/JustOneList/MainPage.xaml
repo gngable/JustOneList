@@ -6,13 +6,29 @@
              x:Class="JustOneList.MainPage">
 
     <StackLayout BackgroundColor="Black">
-        <ListView ItemsSource="{Binding TheList}">
+        <ListView ItemsSource="{Binding UncheckedList}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Orientation="Horizontal">
-                            <controls:Checkbox Checked="{Binding IsChecked}" />
-                            <Label Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AliceBlue"/>
+                            <Frame BorderColor="AntiqueWhite" BackgroundColor="Black">
+                                <controls:Checkbox Checked="{Binding IsChecked}" />
+                            </Frame>
+                            <Entry Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AntiqueWhite" HorizontalOptions="FillAndExpand"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <ListView ItemsSource="{Binding CheckedList}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <Frame BorderColor="AntiqueWhite" BackgroundColor="Black">
+                                <controls:Checkbox Checked="{Binding IsChecked}" />
+                            </Frame>
+                            <Entry Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AntiqueWhite" HorizontalOptions="FillAndExpand"/>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>
