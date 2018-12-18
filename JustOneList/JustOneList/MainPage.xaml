@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:JustOneList"
+             xmlns:controls="clr-namespace:Resources.Controls;assembly=JustOneList"
+             x:Class="JustOneList.MainPage">
+
+    <StackLayout BackgroundColor="Black">
+        <ListView ItemsSource="{Binding TheList}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <controls:Checkbox Checked="{Binding IsChecked}" />
+                            <Label Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AliceBlue"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+
+</ContentPage>
