@@ -15,6 +15,7 @@ namespace JustOneList
     public class MainPageViewModel
     {
         private Task _checkTask = null;
+        private DateTime _lastTypedTime = DateTime.Now;
         public ObservableCollection<ListItem> UncheckedList { get; } = new ObservableCollection<ListItem>();
         public ObservableCollection<ListItem> CheckedList { get; } = new ObservableCollection<ListItem>();
 
@@ -129,13 +130,18 @@ namespace JustOneList
 
         private void UncheckedListItemOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            _lastTypedTime = DateTime.Now;
+
             if (_checkTask == null)
             {
                 _checkTask = Task.Run(async () =>
                 {
                     try
                     {
-                        await Task.Delay(1000);
+                        while ((DateTime.Now - _lastTypedTime) < TimeSpan.FromSeconds(5))
+                        {
+                            await Task.Delay(1000);
+                        }
 
                         if (UncheckedList.All(i => !string.IsNullOrWhiteSpace(i.Label)))
                         {
