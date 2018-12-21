@@ -4,12 +4,14 @@
              xmlns:local="clr-namespace:JustOneList"
              xmlns:controls="clr-namespace:Resources.Controls;assembly=JustOneList"
              x:Class="JustOneList.MainPage">
-    <Grid>
+    <Grid BackgroundColor="Black">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ScrollView>
+        <Label Text="Just One List" TextColor="AntiqueWhite" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand"></Label>
+        <ScrollView Grid.Row="1">
             <StackLayout BackgroundColor="Black">
                 <ListView ItemsSource="{Binding UncheckedList}">
                     <ListView.ItemTemplate>
@@ -43,6 +45,6 @@
                 </ListView>
             </StackLayout>
         </ScrollView>
-        <Button Grid.Row="1" Text="Clear" Command="{Binding ClearCommand}"></Button>
+        <Button Grid.Row="2" Text="Clear" Command="{Binding ClearCommand}" TextColor="AntiqueWhite" BackgroundColor="Black"></Button>
     </Grid>
 </ContentPage>
