@@ -13,7 +13,7 @@ using Android.Widget;
 
 namespace JustOneList.Droid
 {
-    [Activity(Label = "JustOneList", MainLauncher = true, NoHistory = true, Theme = "@style/Theme.Splash",
+    [Activity(Label = "JustOneList", MainLauncher = true, NoHistory = true, Theme = "@style/Theme.Splash", Icon = "@mipmap/icon",
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class SplashScreen : Activity
     {
