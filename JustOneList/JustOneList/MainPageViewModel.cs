@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using JustOneList.Annotations;
 using Newtonsoft.Json;
 using Xamarin.Forms.PlatformConfiguration;
 
@@ -33,8 +34,12 @@ namespace JustOneList
 
             AddListeners();
 
-            ClearCommand = new DelegateCommand(() =>
+            ClearCommand = new DelegateCommand(async () =>
             {
+                var answer = await ShowDialog("Clear List?", "Are you SURE you want to clear your list??", "Yes, clear it", "No");
+
+                if (answer != "Yes, clear it") return;
+
                 if (File.Exists(UncheckedPath))
                 {
                     File.Delete(UncheckedPath);
@@ -128,6 +133,11 @@ namespace JustOneList
             //}
         }
 
+        public async Task<string> ShowDialog(string title, string message, string buttonOne, string buttonTwo)
+        {
+            return await StaticData.CurrentPage.DisplayAlert(title, message, buttonOne, buttonTwo) ? buttonOne : buttonTwo;
+        }
+
         private void UncheckedListItemOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             _lastTypedTime = DateTime.Now;
@@ -138,9 +148,9 @@ namespace JustOneList
                 {
                     try
                     {
-                        while ((DateTime.Now - _lastTypedTime) < TimeSpan.FromSeconds(5))
+                        while ((DateTime.Now - _lastTypedTime) < TimeSpan.FromMilliseconds(500))
                         {
-                            await Task.Delay(1000);
+                            await Task.Delay(500);
                         }
 
                         if (UncheckedList.All(i => !string.IsNullOrWhiteSpace(i.Label)))
@@ -161,6 +171,8 @@ namespace JustOneList
                 });
 
             }
+
+            
 
             //if (e.PropertyName == "IsChecked")
             //{

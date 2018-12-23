@@ -16,6 +16,8 @@ namespace JustOneList
             InitializeComponent();
 
             BindingContext = MainPageViewModel;
+
+            StaticData.CurrentPage = this;
         }
     }
 }

@@ -10,10 +10,10 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Label Text="Just One List" TextColor="AntiqueWhite" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand"></Label>
-        <ScrollView Grid.Row="1">
-            <StackLayout BackgroundColor="Black">
-                <ListView ItemsSource="{Binding UncheckedList}">
+        <Label Text="Just One List" TextColor="AntiqueWhite" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand"/>
+            <!--<ScrollView Grid.Row="1">
+            <StackLayout BackgroundColor="Black">-->
+                <ListView ItemsSource="{Binding UncheckedList}" Grid.Row="1">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -28,15 +28,15 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <ListView ItemsSource="{Binding CheckedList}">
+                <!--<ListView ItemsSource="{Binding CheckedList}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
                                 <StackLayout Orientation="Horizontal">
                                     <Switch IsToggled="{Binding IsChecked}"/>
-                                    <!--<Frame BorderColor="AntiqueWhite" BackgroundColor="Black">
+                                    --><!--<Frame BorderColor="AntiqueWhite" BackgroundColor="Black">
                                         <controls:Checkbox Checked="{Binding IsChecked}" />
-                                    </Frame>-->
+                                    </Frame>--><!--
                                     <Entry Margin="10,0,0,0" Text="{Binding Label}" FontAttributes="Bold" TextColor="AntiqueWhite" HorizontalOptions="FillAndExpand"/>
                                 </StackLayout>
                             </ViewCell>
@@ -44,7 +44,9 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
-        </ScrollView>
-        <Button Grid.Row="2" Text="Clear" Command="{Binding ClearCommand}" TextColor="AntiqueWhite" BackgroundColor="Black"></Button>
+        </ScrollView>-->
+        <!--<StackLayout Grid.Row="2" Orientation="Horizontal">-->
+            <Button Grid.Row="2" Text="Clear" Command="{Binding ClearCommand}" TextColor="AntiqueWhite" BackgroundColor="Black"></Button>
+        <!--</StackLayout>-->
     </Grid>
 </ContentPage>
