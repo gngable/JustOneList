@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -14,10 +15,13 @@ using Xamarin.Forms.PlatformConfiguration;
 
 namespace JustOneList
 {
-    public class MainPageViewModel
+    public class MainPageViewModel : INotifyPropertyChanged
     {
         private Task _checkTask = null;
         private DateTime _lastTypedTime = DateTime.Now;
+        private object _saveLock = new object();
+
+
         public ObservableCollection<ListItem> UncheckedList { get; } = new ObservableCollection<ListItem>();
         public ObservableCollection<ListItem> CheckedList { get; } = new ObservableCollection<ListItem>();
 
@@ -57,14 +61,23 @@ namespace JustOneList
                 UncheckedList.Add(new ListItem());
             });
 
-            ReturnCommand = new DelegateCommand(AddNewIfNeeded);
+            ReturnCommand = new DelegateCommand(() =>
+            {
+                AddNewIfNeeded();
+
+                Task.Run(async () =>
+                {
+                    await Task.Delay(1000);
+                    OnPropertyChanged("ItemAdded");
+                });
+            });
 
             MenuCommand = new DelegateCommand(ShowMenu);
         }
 
         private async void ShowMenu()
         {
-            var answer = await StaticData.CurrentPage.DisplayActionSheet("", "Close", null, "Copy", "Paste", "About");
+            var answer = await StaticData.CurrentPage.DisplayActionSheet("", "Close", null, "Copy", "Paste");
 
             switch (answer)
             {
@@ -314,32 +327,35 @@ namespace JustOneList
 
         public void Save()
         {
-            try
+            lock (_saveLock)
             {
-                if (UncheckedList.Any())
+                try
                 {
-                    var serializedUnchecked = JsonConvert.SerializeObject(UncheckedList.Where(l => !string.IsNullOrWhiteSpace(l.Label)).ToList());
-                    File.WriteAllText(UncheckedPath, serializedUnchecked);
-                }
-                else if (File.Exists(UncheckedPath))
-                {
-                    File.Delete(UncheckedPath);
-                }
+                    if (UncheckedList.Any())
+                    {
+                        var serializedUnchecked = JsonConvert.SerializeObject(UncheckedList.Where(l => !string.IsNullOrWhiteSpace(l.Label)).ToList());
+                        File.WriteAllText(UncheckedPath, serializedUnchecked);
+                    }
+                    else if (File.Exists(UncheckedPath))
+                    {
+                        File.Delete(UncheckedPath);
+                    }
 
-                if (CheckedList.Any())
-                {
-                    var serializedChecked = JsonConvert.SerializeObject(CheckedList.Where(l => !string.IsNullOrWhiteSpace(l.Label)).ToList());
-                    File.WriteAllText(CheckedPath, serializedChecked);
+                    if (CheckedList.Any())
+                    {
+                        var serializedChecked = JsonConvert.SerializeObject(CheckedList.Where(l => !string.IsNullOrWhiteSpace(l.Label)).ToList());
+                        File.WriteAllText(CheckedPath, serializedChecked);
+                    }
+                    else if (File.Exists(CheckedPath))
+                    {
+                        File.Delete(CheckedPath);
+                    }
                 }
-                else if (File.Exists(CheckedPath))
+                catch (Exception ex)
                 {
-                    File.Delete(CheckedPath);
-                }
-            }
-            catch (Exception ex)
-            {
 
-                throw;
+                    throw;
+                }
             }
         }
 
@@ -382,6 +398,14 @@ namespace JustOneList
             {
                 
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

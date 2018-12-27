@@ -14,7 +14,7 @@
              <Label Grid.Row="0" Text="Just One List" TextColor="AntiqueWhite" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
             <Button Grid.Row="0" TextColor="AntiqueWhite" Text="+" FontSize="Large" FontAttributes="Bold" Command="{Binding MenuCommand}" BackgroundColor="Black" HorizontalOptions="End"/>
         <!--</StackLayout>-->
-        <ListView ItemsSource="{Binding UncheckedList}" Grid.Row="1">
+        <ListView ItemsSource="{Binding UncheckedList}" Grid.Row="1" x:Name="ListView">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
