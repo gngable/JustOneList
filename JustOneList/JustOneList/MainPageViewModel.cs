@@ -68,11 +68,23 @@ namespace JustOneList
                 Task.Run(async () =>
                 {
                     await Task.Delay(1000);
-                    OnPropertyChanged("ItemAdded");
+                    Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
+                    {
+                        OnPropertyChanged("ItemAdded");
+                    });
                 });
             });
 
             MenuCommand = new DelegateCommand(ShowMenu);
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
+                {
+                    OnPropertyChanged("ItemAdded");
+                });
+            });
         }
 
         private async void ShowMenu()
@@ -108,7 +120,7 @@ namespace JustOneList
         {
             if (UncheckedList.Any())
             {
-                StaticData.Clipboard.Copy(string.Join(", ", UncheckedList.Where(l => !l.IsChecked && !string.IsNullOrWhiteSpace(l.Label))));
+                StaticData.Clipboard.Copy(string.Join(", ", UncheckedList.Where(l => !l.IsChecked && !string.IsNullOrWhiteSpace(l.Label)).Select(l => l.Label)));
                 //StaticData.Toast("Copied");
             }
             else
