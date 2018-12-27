@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.Views;
@@ -16,6 +17,14 @@ namespace JustOneList.Droid
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
+
+            var clipboard = (ClipboardManager)GetSystemService(ClipboardService);
+
+            StaticData.Clipboard = new J1LClipboard(clipboard);
+
+            StaticData.Toast = (text) => { Toast.MakeText(this.ApplicationContext, "Something", ToastLength.Long); };
+
+            Toast.MakeText(this.ApplicationContext, "Something", ToastLength.Long);
 
             this.Window.SetFlags(WindowManagerFlags.KeepScreenOn, WindowManagerFlags.KeepScreenOn);
 

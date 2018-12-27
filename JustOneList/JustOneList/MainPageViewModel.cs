@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using JustOneList.Annotations;
 using Newtonsoft.Json;
+using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 
 namespace JustOneList
@@ -20,7 +21,9 @@ namespace JustOneList
         public ObservableCollection<ListItem> UncheckedList { get; } = new ObservableCollection<ListItem>();
         public ObservableCollection<ListItem> CheckedList { get; } = new ObservableCollection<ListItem>();
 
-        public ICommand ClearCommand { get; }
+        public DelegateCommand ClearCommand { get; }
+        public DelegateCommand ReturnCommand { get; }
+        public DelegateCommand MenuCommand { get; }
 
         public string CheckedPath => Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "checked.json");
         public string UncheckedPath => Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "unchecked.json");
@@ -53,6 +56,113 @@ namespace JustOneList
                 ClearLists();
                 UncheckedList.Add(new ListItem());
             });
+
+            ReturnCommand = new DelegateCommand(AddNewIfNeeded);
+
+            MenuCommand = new DelegateCommand(ShowMenu);
+        }
+
+        private async void ShowMenu()
+        {
+            var answer = await StaticData.CurrentPage.DisplayActionSheet("", "Close", null, "Copy", "Paste", "About");
+
+            switch (answer)
+            {
+                case "About":
+                   // StaticData.Toast("Created by Nick Gable (Mercangel Software)");
+                   // Task.Run(async () =>
+                   //{
+                   //     await Task.Delay(2000);
+                   //     Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
+                   //     {
+                   //         ShowDialog("About", "Create by Nick Gable\nBecause I'm picky and like things exactly how I like them.", "Ok", null);
+                   //     });
+                   // });
+                    break;
+                //case "Clear":
+                //    ClearCommand.Execute(null);
+                //    break;
+                case "Paste":
+                    HandlePaste();
+                    break;
+                case "Copy":
+                    HandleCopy();
+                    break;
+            }
+        }
+
+        private void HandleCopy()
+        {
+            if (UncheckedList.Any())
+            {
+                StaticData.Clipboard.Copy(string.Join(", ", UncheckedList.Where(l => !l.IsChecked && !string.IsNullOrWhiteSpace(l.Label))));
+                //StaticData.Toast("Copied");
+            }
+            else
+            {
+                //StaticData.Toast("Nothing to copy...");
+                //Task.Run(async () =>
+                //{
+                //    await Task.Delay(2000);
+                //    await ShowDialog("Hmmm", "Nothing to copy...", "Ok", null);
+                //});
+            }
+        }
+
+        private void HandlePaste()
+        {
+            var text = StaticData.Clipboard.Paste();
+
+            if (string.IsNullOrWhiteSpace(text)) return;
+
+            var comma = text.Split(',');
+            var nl = text.Split('\n');
+
+            if (comma.Length > 1 && comma.Length > nl.Length)
+            {
+                foreach (var s in comma)
+                {
+                    var empty = UncheckedList.FirstOrDefault(l => !l.IsChecked && string.IsNullOrWhiteSpace(l.Label));
+
+                    if (empty != null)
+                    {
+                        empty.Label = s.Trim();
+                    }
+                    else
+                    {
+                        UncheckedList.Add(new ListItem{Label = s.Trim()});
+                    }
+                }
+            }
+            else if (nl.Length > 1)
+            {
+                foreach (var s in nl)
+                {
+                    var empty = UncheckedList.FirstOrDefault(l => !l.IsChecked && string.IsNullOrWhiteSpace(l.Label));
+
+                    if (empty != null)
+                    {
+                        empty.Label = s.Trim();
+                    }
+                    else
+                    {
+                        UncheckedList.Add(new ListItem {Label = s.Trim()});
+                    }
+                }
+            }
+            else
+            {
+                var empty = UncheckedList.FirstOrDefault(l => !l.IsChecked && string.IsNullOrWhiteSpace(l.Label));
+
+                if (empty != null)
+                {
+                    empty.Label = text.Trim();
+                }
+                else
+                {
+                    UncheckedList.Add(new ListItem {Label = text.Trim()});
+                }
+            }
         }
 
         private void ClearLists()
@@ -133,6 +243,16 @@ namespace JustOneList
             //}
         }
 
+        public void AddNewIfNeeded()
+        {
+            if (UncheckedList.All(i => !string.IsNullOrWhiteSpace(i.Label)))
+            {
+                UncheckedList.Add(new ListItem());
+            }
+
+            Save();
+        }
+
         public async Task<string> ShowDialog(string title, string message, string buttonOne, string buttonTwo)
         {
             return await StaticData.CurrentPage.DisplayAlert(title, message, buttonOne, buttonTwo) ? buttonOne : buttonTwo;
@@ -150,15 +270,10 @@ namespace JustOneList
                     {
                         while ((DateTime.Now - _lastTypedTime) < TimeSpan.FromMilliseconds(500))
                         {
-                            await Task.Delay(500);
+                            await Task.Delay(2000);
                         }
 
-                        if (UncheckedList.All(i => !string.IsNullOrWhiteSpace(i.Label)))
-                        {
-                            UncheckedList.Add(new ListItem());
-                        }
-
-                        Save();
+                        AddNewIfNeeded();
                     }
                     catch (Exception)
                     {

@@ -57,6 +57,7 @@
     <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="27.0.2.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="J1LClipboard.cs" />
     <Compile Include="MainActivity.cs" />
     <AndroidResource Include="Resources\drawable\SplashScreen.xml">
       <SubType>Designer</SubType>
