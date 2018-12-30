@@ -293,9 +293,9 @@ namespace JustOneList
                 {
                     try
                     {
-                        while ((DateTime.Now - _lastTypedTime) < TimeSpan.FromMilliseconds(500))
+                        while ((DateTime.Now - _lastTypedTime) < TimeSpan.FromMilliseconds(3000))
                         {
-                            await Task.Delay(2000);
+                            await Task.Delay(1000);
                         }
 
                         AddNewIfNeeded();
