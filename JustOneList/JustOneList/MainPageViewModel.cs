@@ -23,13 +23,11 @@ namespace JustOneList
 
 
         public ObservableCollection<ListItem> UncheckedList { get; } = new ObservableCollection<ListItem>();
-        public ObservableCollection<ListItem> CheckedList { get; } = new ObservableCollection<ListItem>();
 
         public DelegateCommand ClearCommand { get; }
+        public DelegateCommand ClearCheckedCommand { get; }
         public DelegateCommand ReturnCommand { get; }
         public DelegateCommand MenuCommand { get; }
-
-        public string CheckedPath => Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "checked.json");
         public string UncheckedPath => Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "unchecked.json");
 
         public MainPageViewModel()
@@ -37,9 +35,20 @@ namespace JustOneList
             Load();
 
             UncheckedList.CollectionChanged += UncheckedList_CollectionChanged;
-            CheckedList.CollectionChanged += CheckedList_CollectionChanged;
 
             AddListeners();
+
+            ClearCheckedCommand = new DelegateCommand(() =>
+            {
+                var check = UncheckedList.Where(l => l.IsChecked).ToList();
+
+                foreach (var listItem in check)
+                {
+                    UncheckedList.Remove(listItem);
+                }
+
+                AddNewIfNeeded();
+            });
 
             ClearCommand = new DelegateCommand(async () =>
             {
@@ -50,11 +59,6 @@ namespace JustOneList
                 if (File.Exists(UncheckedPath))
                 {
                     File.Delete(UncheckedPath);
-                }
-
-                if (File.Exists(CheckedPath))
-                {
-                    File.Delete(CheckedPath);
                 }
 
                 ClearLists();
@@ -89,30 +93,40 @@ namespace JustOneList
 
         private async void ShowMenu()
         {
-            var answer = await StaticData.CurrentPage.DisplayActionSheet("", "Close", null, "Copy", "Paste");
-
-            switch (answer)
+            try
             {
-                case "About":
-                   // StaticData.Toast("Created by Nick Gable (Mercangel Software)");
-                   // Task.Run(async () =>
-                   //{
-                   //     await Task.Delay(2000);
-                   //     Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
-                   //     {
-                   //         ShowDialog("About", "Create by Nick Gable\nBecause I'm picky and like things exactly how I like them.", "Ok", null);
-                   //     });
-                   // });
-                    break;
-                //case "Clear":
-                //    ClearCommand.Execute(null);
-                //    break;
-                case "Paste":
-                    HandlePaste();
-                    break;
-                case "Copy":
-                    HandleCopy();
-                    break;
+                var answer = await StaticData.CurrentPage.DisplayActionSheet("", "Close", null, "Sort", "Copy", "Paste", "About");
+
+                switch (answer)
+                {
+                    case "Sort":
+
+                        var list = UncheckedList.Where(l => !string.IsNullOrWhiteSpace(l.Label)).OrderBy(l => l.Label).ToList();
+
+                        UncheckedList.Clear();
+
+                        foreach (var listItem in list)
+                        {
+                            UncheckedList.Add(listItem);
+                        }
+
+                        AddNewIfNeeded();
+
+                        break;
+                    case "About":
+                        await ShowDialog("About", "Created by Nick Gable (Mercangel Software)", "Ok");
+                        break;
+                    case "Paste":
+                        HandlePaste();
+                        break;
+                    case "Copy":
+                        HandleCopy();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 
@@ -199,17 +213,9 @@ namespace JustOneList
                     listItem.PropertyChanged -= UncheckedListItemOnPropertyChanged;
                 }
 
-                foreach (var listItem in CheckedList)
-                {
-                    listItem.PropertyChanged -= CheckedListItemPropertyChanged;
-                }
-
                 UncheckedList.CollectionChanged -= UncheckedList_CollectionChanged;
-                CheckedList.CollectionChanged -= CheckedList_CollectionChanged;
                 UncheckedList.Clear();
-                CheckedList.Clear();
                 UncheckedList.CollectionChanged += UncheckedList_CollectionChanged;
-                CheckedList.CollectionChanged += CheckedList_CollectionChanged;
                 AddListeners();
             }
             catch (Exception ex)
@@ -235,37 +241,6 @@ namespace JustOneList
                 listItem.PropertyChanged -= UncheckedListItemOnPropertyChanged;
                 listItem.PropertyChanged += UncheckedListItemOnPropertyChanged;
             }
-
-            foreach (var listItem in CheckedList)
-            {
-                listItem.PropertyChanged -= CheckedListItemPropertyChanged;
-                listItem.PropertyChanged += CheckedListItemPropertyChanged;
-            }
-        }
-
-        private void CheckedListItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            //if (e.PropertyName == "IsChecked")
-            //{
-            //    var item = sender as ListItem;
-
-            //    Task.Run(() =>
-            //    {
-            //        try
-            //        {
-            //            if (item.IsChecked)
-            //            {
-            //                item.PropertyChanged -= CheckedListItemPropertyChanged;
-            //                CheckedList.Remove(item);
-            //                UncheckedList.Add(item);
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-                        
-            //        }
-            //    });
-            //}
         }
 
         public void AddNewIfNeeded()
@@ -278,8 +253,14 @@ namespace JustOneList
             Save();
         }
 
-        public async Task<string> ShowDialog(string title, string message, string buttonOne, string buttonTwo)
+        public async Task<string> ShowDialog(string title, string message, string buttonOne, string buttonTwo = null)
         {
+            if (buttonTwo == null)
+            {
+                await StaticData.CurrentPage.DisplayAlert(title, message, buttonOne);
+                return buttonOne;
+            }
+
             return await StaticData.CurrentPage.DisplayAlert(title, message, buttonOne, buttonTwo) ? buttonOne : buttonTwo;
         }
 
@@ -312,28 +293,34 @@ namespace JustOneList
 
             }
 
-            
 
+            //this works.... but seems strange
             //if (e.PropertyName == "IsChecked")
             //{
             //    var item = sender as ListItem;
 
-            //    Task.Run(() =>
+            //    if (item.IsChecked)
             //    {
-            //        try
-            //        {
-            //            if (item.IsChecked)
-            //            {
-            //                item.PropertyChanged -= UncheckedListItemOnPropertyChanged;
-            //                UncheckedList.Remove(item);
-            //                CheckedList.Add(item);
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
+            //        UncheckedList.Remove(item);
+            //        UncheckedList.Add(item);
+            //    }
 
-            //        }
-            //    });
+            //    //Task.Run(() =>
+            //    //{
+            //    //    try
+            //    //    {
+            //    //        if (item.IsChecked)
+            //    //        {
+            //    //            item.PropertyChanged -= UncheckedListItemOnPropertyChanged;
+            //    //            UncheckedList.Remove(item);
+            //    //            CheckedList.Add(item);
+            //    //        }
+            //    //    }
+            //    //    catch (Exception ex)
+            //    //    {
+
+            //    //    }
+            //    //});
             //}
         }
 
@@ -351,16 +338,6 @@ namespace JustOneList
                     else if (File.Exists(UncheckedPath))
                     {
                         File.Delete(UncheckedPath);
-                    }
-
-                    if (CheckedList.Any())
-                    {
-                        var serializedChecked = JsonConvert.SerializeObject(CheckedList.Where(l => !string.IsNullOrWhiteSpace(l.Label)).ToList());
-                        File.WriteAllText(CheckedPath, serializedChecked);
-                    }
-                    else if (File.Exists(CheckedPath))
-                    {
-                        File.Delete(CheckedPath);
                     }
                 }
                 catch (Exception ex)
@@ -386,18 +363,6 @@ namespace JustOneList
                     foreach (var listItem in list)
                     {
                         UncheckedList.Add(listItem);
-                    }
-                }
-
-                if (File.Exists(CheckedPath))
-                {
-                    var serializedChecked = File.ReadAllText(CheckedPath);
-
-                    var list = JsonConvert.DeserializeObject<List<ListItem>>(serializedChecked);
-
-                    foreach (var listItem in list)
-                    {
-                        CheckedList.Add(listItem);
                     }
                 }
 

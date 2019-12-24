@@ -10,16 +10,14 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <!--<StackLayout Orientation="Horizontal">-->
-             <Label Grid.Row="0" Text="Just One List" TextColor="AntiqueWhite" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
-            <Button Grid.Row="0" TextColor="AntiqueWhite" Text="+" FontSize="Large" FontAttributes="Bold" Command="{Binding MenuCommand}" BackgroundColor="Black" HorizontalOptions="End"/>
-        <!--</StackLayout>-->
+        <Label Grid.Row="0" Text="Just One List" TextColor="AntiqueWhite" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
+        <Button Grid.Row="0" TextColor="AntiqueWhite" Text="+" FontSize="Large" FontAttributes="Bold" Command="{Binding MenuCommand}" BackgroundColor="Black" HorizontalOptions="End"/>
         <ListView ItemsSource="{Binding UncheckedList}" Grid.Row="1" x:Name="ListView" Margin="5">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Orientation="Horizontal">
-                            <Switch IsToggled="{Binding IsChecked}"/>
+                            <CheckBox IsChecked="{Binding IsChecked}" Color="Blue"/>
                             <Entry Margin="10,0,0,0" 
                                    Text="{Binding Label}" 
                                    FontAttributes="Bold" 
@@ -28,6 +26,7 @@
                                    IsTextPredictionEnabled="True" 
                                    IsSpellCheckEnabled="True" 
                                    ReturnType="Next" 
+                                   PlaceholderColor="Blue"
                                    ReturnCommand="{Binding Source={x:Reference MainWindow}, Path=BindingContext.ReturnCommand}">
                                 <Entry.Keyboard>
                                     <Keyboard x:FactoryMethod="Create">
@@ -42,6 +41,13 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Grid.Row="2" Text="Clear" Command="{Binding ClearCommand}" TextColor="AntiqueWhite" BackgroundColor="Black"></Button>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Text="Clear Checked" Command="{Binding ClearCheckedCommand}" TextColor="AntiqueWhite" BackgroundColor="Black"/>
+            <Button Grid.Column="1" Text="Clear All" Command="{Binding ClearCommand}" TextColor="AntiqueWhite" BackgroundColor="Black"/>
+        </Grid>
     </Grid>
 </ContentPage>
